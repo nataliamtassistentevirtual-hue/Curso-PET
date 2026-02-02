@@ -9,7 +9,7 @@ interface CTAButtonProps {
 }
 
 export const CTAButton: React.FC<CTAButtonProps> = ({ text, className = "", onClick, href }) => {
-  const baseClasses = `bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-bold py-4 px-8 rounded-xl transition-all transform hover:scale-[1.02] shadow-md flex items-center justify-center gap-2 group ${className}`;
+  const baseClasses = `bg-[#8B735B] hover:bg-[#76624D] text-white font-medium py-4 px-8 rounded-full transition-all duration-300 transform hover:translate-y-[-2px] shadow-sm flex items-center justify-center gap-2 group tracking-wide ${className}`;
 
   if (href) {
     return (

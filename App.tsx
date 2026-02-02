@@ -5,7 +5,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   Check, 
-  MessageCircle,
   Users,
   Brain,
   Zap,
@@ -44,7 +43,7 @@ const DEFAULT_CONTENT: SiteContent = {
   priceInstallments: "12x",
   priceValue: "197",
   priceCash: "1.997,00",
-  whatsappLink: "https://wa.me/seu-numero"
+  whatsappLink: ""
 };
 
 const App: React.FC = () => {
@@ -103,95 +102,102 @@ const App: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#1E293B] font-sans">
+    <div className="min-h-screen bg-[#FDFCF9] text-[#2D2A28] font-sans selection:bg-[#8B735B] selection:text-white">
       {/* Header */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-100">
-        <div className="max-w-4xl mx-auto px-6 flex justify-between items-center h-16">
+      <nav className="fixed top-0 w-full bg-[#FDFCF9]/90 backdrop-blur-md z-50 border-b border-[#8B735B]/10">
+        <div className="max-w-5xl mx-auto px-6 flex justify-between items-center h-20">
           <div className="flex items-center gap-2">
-             <div className="w-8 h-8 bg-[#1d4ed8] rounded-lg flex items-center justify-center">
-                <Brain className="text-white w-5 h-5" />
-             </div>
-             <span className="font-bold text-slate-800 tracking-tight">{content.specialistName.replace(/\s/g, '')}</span>
+             <span className="font-['Playfair_Display'] text-2xl font-bold tracking-tighter text-[#2D2A28]">{content.specialistName}</span>
           </div>
-          <CTAButton text="Matricule-se" href={content.courseLink} className="py-2 px-6 text-sm !bg-transparent !border !border-blue-600 !text-blue-600 hover:!bg-blue-50 !shadow-none" />
+          <div className="flex items-center gap-8">
+            <CTAButton text="Acessar Conteúdo" href={content.courseLink} className="py-2.5 px-6 text-base !bg-transparent !border !border-[#8B735B] !text-[#8B735B] hover:!bg-[#8B735B] hover:!text-white !shadow-none !rounded-full" />
+          </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-28 pb-16 px-6">
+      <section className="pt-48 pb-24 px-6 relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#8B735B]/5 rounded-full blur-[150px] -z-10"></div>
+        
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-6">
-            Inscrições Abertas
+          <div className="inline-block border border-[#8B735B]/20 text-[#8B735B] text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-10">
+            Formação 100% Online
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight font-['Inter']">
+          <h1 className="text-4xl md:text-7xl font-bold text-[#2D2A28] mb-10 leading-[1.15] font-['Playfair_Display'] italic">
             {content.headline}
           </h1>
-          <p className="text-slate-500 text-lg mb-10 max-w-2xl mx-auto">
+          <p className="text-[#8B735B] text-xl md:text-3xl mb-14 max-w-2xl mx-auto font-light leading-relaxed">
             {content.subheadline}
           </p>
-          <CTAButton text="Garantir minha vaga" href={content.courseLink} className="w-full md:w-auto px-12 py-5" />
-          <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
-             <Check className="w-4 h-4 text-green-500" />
-             <span>CERTIFICADO RECONHECIDO</span>
+          <div className="flex flex-col items-center gap-6">
+            <CTAButton text="Adquirir Acesso ao Curso" href={content.courseLink} className="w-full md:w-auto px-16 py-6 text-xl" />
+            <span className="text-sm uppercase tracking-[0.2em] text-slate-400 font-medium">Plataforma de ensino exclusiva</span>
           </div>
         </div>
       </section>
 
       {/* Specialist Section */}
-      <section className="py-16 bg-white border-y border-slate-100">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="mb-6 relative inline-block">
-             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mx-auto bg-slate-100 flex items-center justify-center">
+      <section className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="relative">
+              <div className="aspect-[4/5] rounded-[2rem] overflow-hidden bg-[#FDFCF9] border border-[#8B735B]/10">
                 {content.specialistImageUrl ? (
-                   <img src={content.specialistImageUrl} alt={content.specialistName} className="w-full h-full object-cover" />
+                   <img src={content.specialistImageUrl} alt={content.specialistName} className="w-full h-full object-cover grayscale-[20%]" />
                 ) : (
-                   <Users className="w-12 h-12 text-slate-300" />
+                   <div className="w-full h-full flex items-center justify-center bg-[#8B735B]/5">
+                      <Users className="w-20 h-20 text-[#8B735B]/20" />
+                   </div>
                 )}
-             </div>
-          </div>
-          <span className="block text-blue-600 text-[10px] font-bold uppercase tracking-widest mb-2">Especialista</span>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">{content.specialistName}</h2>
-          <p className="text-slate-500 text-base max-w-xl mx-auto leading-relaxed mb-8">
-            {content.specialistBio}
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-             <span className="bg-slate-50 text-slate-600 text-xs font-medium px-4 py-2 rounded-lg border border-slate-100 flex items-center gap-2">
-                <Award className="w-3 h-3" /> EMDRIA Trainer
-             </span>
-             <span className="bg-slate-50 text-slate-600 text-xs font-medium px-4 py-2 rounded-lg border border-slate-100 flex items-center gap-2">
-                <Shield className="w-3 h-3" /> Trauma Specialist
-             </span>
+              </div>
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#8B735B] rounded-full flex items-center justify-center text-white p-4 text-center text-sm font-bold uppercase tracking-widest leading-tight border-8 border-white shadow-lg">
+                Referência em EMDR no Brasil
+              </div>
+            </div>
+            <div>
+              <span className="text-[#8B735B] text-sm font-bold uppercase tracking-[0.3em] mb-6 block">Sobre a Especialista</span>
+              <h2 className="text-4xl font-bold text-[#2D2A28] mb-8 font-['Playfair_Display']">{content.specialistName}</h2>
+              <p className="text-[#2D2A28]/80 text-2xl leading-relaxed mb-10 font-light italic">
+                {content.specialistBio}
+              </p>
+              <div className="flex flex-col gap-4">
+                 <div className="flex items-center gap-4 text-lg text-[#8B735B]">
+                    <Award className="w-6 h-6 opacity-60" />
+                    <span>EMDRIA Accredited Senior Trainer</span>
+                 </div>
+                 <div className="flex items-center gap-4 text-lg text-[#8B735B]">
+                    <Shield className="w-6 h-6 opacity-60" />
+                    <span>Especialista em Traumas Complexos</span>
+                 </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-20 bg-slate-50/50">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-2xl font-bold mb-4">O que você vai dominar</h2>
-            <div className="w-12 h-1 bg-blue-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-slate-500 text-sm md:text-base max-w-xl mx-auto">
-              Um roteiro prático e estruturado para levar sua clínica ao próximo nível de excelência técnica.
-            </p>
+      {/* Benefits Section - FOCO NO AUMENTO DE FONTE AQUI */}
+      <section className="py-32 bg-[#FDFCF9]">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-24">
+            <span className="text-[#8B735B] text-base font-bold uppercase tracking-[0.3em] mb-6 block">Metodologia</span>
+            <h2 className="text-4xl font-bold font-['Playfair_Display'] mb-8">O que você vai dominar</h2>
+            <div className="w-16 h-[1px] bg-[#8B735B]/30 mx-auto"></div>
           </div>
 
-          <div className="space-y-6">
+          <div className="grid md:grid-cols-3 gap-12">
             {[
               { icon: <Shield />, title: "Segurança Clínica", desc: "Aprenda protocolos precisos para estabilização de pacientes e manejo de crises durante o processamento." },
               { icon: <Zap />, title: "Neurobiologia", desc: "Entenda exatamente o que acontece no cérebro durante o reprocessamento e use isso a seu favor." },
               { icon: <Users />, title: "Traumas Complexos", desc: "Estratégias específicas para casos de dissociação e traumas de desenvolvimento que não cedem ao protocolo básico." }
             ].map((item, i) => (
-              <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-6 items-start group hover:shadow-md transition-shadow">
-                 <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 transition-colors">
-                    {React.cloneElement(item.icon as React.ReactElement, { className: "text-blue-600 w-6 h-6 group-hover:text-white" })}
+              <div key={i} className="text-center group">
+                 <div className="w-20 h-20 bg-white border border-[#8B735B]/10 rounded-full flex items-center justify-center mx-auto mb-10 transition-all duration-500 group-hover:bg-[#8B735B] group-hover:border-transparent group-hover:shadow-xl group-hover:shadow-[#8B735B]/20">
+                    {React.cloneElement(item.icon as React.ReactElement, { className: "text-[#8B735B] w-8 h-8 group-hover:text-white transition-colors" })}
                  </div>
-                 <div>
-                    <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed">
-                      {item.desc}
-                    </p>
-                 </div>
+                 <h3 className="text-2xl font-bold mb-6 font-['Playfair_Display']">{item.title}</h3>
+                 <p className="text-[#2D2A28]/60 text-xl leading-[1.8] font-light">
+                   {item.desc}
+                 </p>
               </div>
             ))}
           </div>
@@ -199,28 +205,37 @@ const App: React.FC = () => {
       </section>
 
       {/* Curriculum Section */}
-      <section className="py-20 bg-white">
+      <section className="py-32 bg-white">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-16">Conteúdo do Curso</h2>
-          <div className="space-y-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+            <div className="max-w-md">
+              <span className="text-[#8B735B] text-sm font-bold uppercase tracking-[0.3em] mb-4 block">Grade Curricular</span>
+              <h2 className="text-4xl font-bold font-['Playfair_Display']">Estrutura do Aprendizado</h2>
+            </div>
+            <p className="text-slate-400 text-lg font-light italic">Conteúdo distribuído em etapas estratégicas</p>
+          </div>
+          
+          <div className="space-y-6">
             {modules.map((m) => (
-              <div key={m.id} className="border border-slate-100 rounded-xl overflow-hidden shadow-sm">
+              <div key={m.id} className="border-b border-[#8B735B]/10">
                 <button 
                   onClick={() => setOpenModule(openModule === m.id ? null : m.id)}
-                  className="w-full flex items-center justify-between p-6 bg-white hover:bg-slate-50 transition-colors"
+                  className="w-full flex items-center justify-between py-10 text-left group"
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="text-blue-600 font-bold text-sm">0{m.id}</span>
-                    <span className="font-bold text-slate-800 text-sm md:text-base text-left">{m.title}</span>
+                  <div className="flex items-center gap-10">
+                    <span className="text-[#8B735B]/40 font-['Playfair_Display'] text-3xl italic">0{m.id}</span>
+                    <span className="font-bold text-[#2D2A28] text-2xl group-hover:text-[#8B735B] transition-colors">{m.title}</span>
                   </div>
-                  {openModule === m.id ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+                  <div className={`w-12 h-12 rounded-full border border-[#8B735B]/10 flex items-center justify-center transition-all ${openModule === m.id ? 'bg-[#8B735B] border-transparent' : ''}`}>
+                    {openModule === m.id ? <ChevronUp className="w-5 h-5 text-white" /> : <ChevronDown className="w-5 h-5 text-[#8B735B]" />}
+                  </div>
                 </button>
                 {openModule === m.id && (
-                  <div className="p-6 bg-slate-50 border-t border-slate-100">
-                    <ul className="space-y-3">
+                  <div className="pb-10 pl-20 pr-10">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                       {m.topics.map((t, idx) => (
-                        <li key={idx} className="flex items-center gap-3 text-sm text-slate-600">
-                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                        <li key={idx} className="flex items-center gap-4 text-lg text-[#2D2A28]/70 font-light">
+                          <div className="w-1.5 h-1.5 bg-[#8B735B] rounded-full"></div>
                           {t}
                         </li>
                       ))}
@@ -233,122 +248,87 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Target Audience Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-[#eff6ff] rounded-[32px] p-12 text-center border border-blue-100">
-            <Users className="w-12 h-12 text-blue-600 mx-auto mb-8" />
-            <h2 className="text-3xl font-bold text-slate-900 mb-6 leading-tight">Para quem é este curso?</h2>
-            <p className="text-slate-500 text-lg mb-10 leading-relaxed">
-              Psicólogos e Psiquiatras com formação concluída em EMDR (Nível 1 ou 2) que buscam aprofundamento técnico e maior segurança em casos de alta complexidade.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              {["Psicólogos", "Psiquiatras", "Terapeutas EMDR"].map((item) => (
-                <div key={item} className="bg-white px-6 py-3 rounded-full flex items-center gap-2 shadow-sm border border-blue-50">
-                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                    <Check className="w-3 h-3 text-white" />
-                  </div>
-                  <span className="text-sm font-bold text-slate-700">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Checkout Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-32 bg-[#FDFCF9]">
         <div className="max-w-lg mx-auto px-6">
-           <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-slate-100">
-              <div className="bg-blue-600 text-white text-center py-3 text-[10px] font-bold uppercase tracking-widest">
-                 Oferta Exclusiva
+           <div className="bg-white rounded-[3rem] p-12 text-center shadow-2xl shadow-[#8B735B]/5 border border-[#8B735B]/5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#8B735B]/5 rounded-bl-[4rem]"></div>
+              
+              <span className="text-[#8B735B] text-sm font-bold uppercase tracking-[0.4em] mb-12 block">Investimento no seu Futuro</span>
+              
+              <div className="mb-14">
+                 <p className="text-slate-300 text-lg line-through mb-4">De R$ 2.497,00</p>
+                 <div className="flex items-baseline justify-center gap-2">
+                    <span className="text-[#2D2A28] font-light text-2xl">{content.priceInstallments} de</span>
+                    <span className="text-[#2D2A28] font-bold text-6xl font-['Playfair_Display'] italic">R$ {content.priceValue}</span>
+                 </div>
+                 <p className="text-[#8B735B] text-base mt-6 uppercase tracking-widest font-bold">À vista por R$ {content.priceCash}</p>
               </div>
-              <div className="p-10 text-center">
-                 <p className="text-slate-400 text-xs line-through mb-2">De R$ 2.497,00</p>
-                 <div className="flex items-center justify-center gap-1 mb-1">
-                    <span className="text-slate-900 font-bold text-lg">{content.priceInstallments}</span>
-                    <span className="text-blue-600 font-bold text-5xl">R$ {content.priceValue}</span>
-                    <span className="text-slate-900 font-bold text-lg">,00</span>
-                 </div>
-                 <p className="text-slate-400 text-xs mb-10">ou R$ {content.priceCash} à vista</p>
-                 
-                 <ul className="text-left space-y-4 mb-10">
-                    {[
-                      "Acesso vitalício às aulas",
-                      "Material didático em PDF",
-                      "Certificado assinado por Silvia Guz",
-                      "Suporte direto para dúvidas"
-                    ].map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-slate-600 text-sm">
-                        <Check className="w-4 h-4 text-green-500" />
-                        {feature}
-                      </li>
-                    ))}
-                 </ul>
+              
+              <ul className="text-left space-y-6 mb-16 border-t border-slate-50 pt-10">
+                 {[
+                   "Acesso imediato à plataforma de alunos",
+                   "Materiais complementares exclusivos",
+                   "Certificado de Conclusão Digital",
+                   "Suporte via área de membros"
+                 ].map((feature) => (
+                   <li key={feature} className="flex items-center gap-4 text-[#2D2A28]/60 text-lg font-light">
+                     <Check className="w-6 h-6 text-[#8B735B]" />
+                     {feature}
+                   </li>
+                 ))}
+              </ul>
 
-                 <CTAButton text="Inscrever-se Agora" href={content.courseLink} className="w-full !rounded-xl" />
-                 
-                 <div className="mt-8 flex flex-col items-center gap-4">
-                    <div className="flex gap-2 opacity-30">
-                       <Play className="w-5 h-5" /> 
-                       <Lock className="w-5 h-5" />
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                       <Lock className="w-3 h-3" /> Pagamento 100% Seguro
-                    </div>
-                 </div>
+              <CTAButton text="Garantir meu Acesso" href={content.courseLink} className="w-full !rounded-2xl py-6 text-xl" />
+              
+              <div className="mt-12 flex items-center justify-center gap-3 text-sm text-slate-300 font-bold uppercase tracking-widest">
+                 <Lock className="w-4 h-4" /> Transação Criptografada & Segura
               </div>
            </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1e293b] text-white py-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-6">
-             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Brain className="text-white w-5 h-5" />
-             </div>
-             <span className="font-bold text-xl tracking-tight">{content.specialistName}</span>
+      <footer className="bg-[#2D2A28] text-[#FDFCF9]/90 py-24 px-6 border-t border-[#8B735B]/10">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-start mb-20">
+            <div>
+              <span className="font-['Playfair_Display'] text-3xl font-bold tracking-tighter mb-8 block">{content.specialistName}</span>
+              <p className="text-[#FDFCF9]/50 text-lg max-w-sm leading-relaxed font-light italic">
+                Aprimorando a excellence clínica e transformando o atendimento de traumas através da ciência.
+              </p>
+            </div>
+            <div className="flex flex-col md:items-end gap-10">
+              <div className="flex gap-12 text-sm uppercase tracking-[0.3em] font-bold text-[#FDFCF9]/40">
+                 <a href="#" className="hover:text-[#8B735B] transition-colors">Termos</a>
+                 <a href="#" className="hover:text-[#8B735B] transition-colors">Privacidade</a>
+              </div>
+              <div className="flex gap-6">
+                <div className="w-10 h-10 border border-white/5 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
+                  <Play className="w-3 h-3 fill-[#FDFCF9]/30 text-transparent" />
+                </div>
+                <div className="w-10 h-10 border border-white/5 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
+                  <Brain className="w-5 h-5 opacity-30" />
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-slate-400 text-sm mb-12 max-w-sm mx-auto">
-            Elevando o padrão da terapia EMDR no Brasil através da ciência e experiência clínica.
-          </p>
           
-          <div className="flex justify-center gap-8 mb-12 text-slate-400 text-xs font-bold uppercase tracking-widest">
-             <a href="#" className="hover:text-white">Termos</a>
-             <a href="#" className="hover:text-white">Privacidade</a>
-             <a href="#" className="hover:text-white">Suporte</a>
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <p className="text-[#FDFCF9]/20 text-sm uppercase tracking-[0.2em]">
+              © 2024 {content.specialistName}.
+            </p>
+            
+            {/* Botão de área administrativa restaurado com login e senha */}
+            <button 
+              onClick={() => user ? setView('admin') : setView('auth')}
+              className="text-sm uppercase tracking-[0.4em] text-[#FDFCF9]/20 hover:text-[#8B735B] transition-colors font-bold"
+            >
+              Área Administrativa
+            </button>
           </div>
-          
-          <p className="text-slate-500 text-[10px] uppercase tracking-widest">
-            © 2024 {content.specialistName}. Todos os direitos reservados.
-          </p>
         </div>
       </footer>
-
-      {/* Floating WhatsApp Button */}
-      <a 
-        href={content.whatsappLink}
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="fixed bottom-8 right-8 w-16 h-16 bg-green-500 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-50 group"
-      >
-        <MessageCircle className="w-8 h-8" />
-        <span className="absolute right-full mr-4 bg-white text-slate-800 px-4 py-2 rounded-lg text-sm font-bold shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-slate-100">
-           Dúvidas? Fale conosco
-        </span>
-      </a>
-
-      {/* Discrete Login Button in Footer */}
-      <div className="bg-[#1e293b] pb-8 text-center border-t border-slate-800/50">
-         <button 
-           onClick={() => user ? setView('admin') : setView('auth')}
-           className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-blue-400 transition-colors"
-         >
-           Painel de Administração
-         </button>
-      </div>
     </div>
   );
 };

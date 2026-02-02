@@ -3,11 +3,9 @@ import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
   sendPasswordResetEmail 
 } from 'firebase/auth';
 import { Mail, Lock, ArrowLeft, Loader2 } from 'lucide-react';
-import { CTAButton } from './CTAButton';
 
 interface AuthScreenProps {
   onBack: () => void;
@@ -15,7 +13,6 @@ interface AuthScreenProps {
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,14 +26,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onSuccess }) => 
     setMessage('');
 
     try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
+      await signInWithEmailAndPassword(auth, email, password);
       onSuccess();
     } catch (err: any) {
-      setError(err.message || 'Ocorreu um erro ao processar sua solicitação.');
+      setError('Credenciais inválidas ou erro de conexão.');
     } finally {
       setLoading(false);
     }
@@ -44,13 +37,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onSuccess }) => 
 
   const handleResetPassword = async () => {
     if (!email) {
-      setError('Por favor, digite seu e-mail primeiro.');
+      setError('Digite seu e-mail administrativo.');
       return;
     }
     setLoading(true);
     try {
       await sendPasswordResetEmail(auth, email);
-      setMessage('E-mail de recuperação enviado com sucesso!');
+      setMessage('E-mail de recuperação enviado.');
     } catch (err: any) {
       setError('Erro ao enviar e-mail de recuperação.');
     } finally {
@@ -63,81 +56,69 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onBack, onSuccess }) => 
       <div className="max-w-md w-full">
         <button 
           onClick={onBack}
-          className="flex items-center gap-2 text-[#4B3F3A] mb-8 hover:translate-x-[-4px] transition-transform font-medium"
+          className="flex items-center gap-2 text-[#8B735B] mb-8 hover:translate-x-[-4px] transition-transform font-medium text-sm uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar para o site
         </button>
 
-        <div className="bg-white p-10 rounded-[40px] shadow-2xl shadow-[#4B3F3A]/5 border border-gray-100">
+        <div className="bg-white p-10 rounded-[40px] shadow-2xl shadow-[#8B735B]/5 border border-[#8B735B]/5">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-[#4B3F3A] mb-2">
-              {isLogin ? 'Bem-vindo de volta' : 'Crie sua conta'}
+            <h2 className="text-2xl font-bold text-[#2D2A28] mb-2 font-['Playfair_Display']">
+              Acesso Administrativo
             </h2>
-            <p className="text-gray-500">Acesse sua área exclusiva de estudos.</p>
+            <p className="text-gray-400 text-base italic">Área restrita para edição do conteúdo.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">E-mail Admin</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                 <input 
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#D97706] focus:border-transparent outline-none transition-all"
-                  placeholder="seu@email.com"
+                  className="w-full bg-[#FDFCF9] border border-[#8B735B]/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-1 focus:ring-[#8B735B] text-base"
+                  placeholder="admin@email.com"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+              <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Senha</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                 <input 
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-[#D97706] focus:border-transparent outline-none transition-all"
+                  className="w-full bg-[#FDFCF9] border border-[#8B735B]/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-1 focus:ring-[#8B735B] text-base"
                   placeholder="••••••••"
                   required
                 />
               </div>
             </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            {message && <p className="text-green-600 text-sm">{message}</p>}
+            {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+            {message && <p className="text-green-600 text-sm text-center">{message}</p>}
 
             <button
               disabled={loading}
               type="submit"
-              className="w-full bg-[#4B3F3A] text-white font-bold py-4 rounded-2xl hover:bg-[#2D2A28] transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#2D2A28] text-white font-bold py-4 rounded-2xl hover:bg-[#8B735B] transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-sm"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (isLogin ? 'Entrar' : 'Cadastrar')}
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Entrar no Painel'}
             </button>
           </form>
 
-          <div className="mt-8 text-center space-y-4">
-            {isLogin && (
-              <button 
-                onClick={handleResetPassword}
-                className="text-sm text-gray-500 hover:text-[#D97706] transition-colors"
-              >
-                Esqueceu sua senha?
-              </button>
-            )}
-            
-            <p className="text-sm text-gray-500">
-              {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
-              <button 
-                onClick={() => setIsLogin(!isLogin)}
-                className="ml-2 font-bold text-[#4B3F3A] hover:text-[#D97706] transition-colors"
-              >
-                {isLogin ? 'Cadastre-se' : 'Faça login'}
-              </button>
-            </p>
+          <div className="mt-8 text-center">
+            <button 
+              onClick={handleResetPassword}
+              className="text-xs text-gray-400 hover:text-[#8B735B] transition-colors uppercase tracking-widest"
+            >
+              Esqueceu sua senha?
+            </button>
           </div>
         </div>
       </div>
