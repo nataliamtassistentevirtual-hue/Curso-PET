@@ -2,16 +2,17 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
-import { LogOut, Save, Layout, Link as LinkIcon, Image as ImageIcon, CreditCard } from 'lucide-react';
+import { LogOut, Save, Layout, Link as LinkIcon, Eye, CreditCard } from 'lucide-react';
 import { SiteContent } from '../App';
 
 interface AdminAreaProps {
   content: SiteContent;
-  onUpdate: (content: SiteContent) => void;
+  onUpdate: (content: SiteContent) => Promise<boolean>;
   onLogout: () => void;
+  onViewSite: () => void;
 }
 
-export const AdminArea: React.FC<AdminAreaProps> = ({ content, onUpdate, onLogout }) => {
+export const AdminArea: React.FC<AdminAreaProps> = ({ content, onUpdate, onLogout, onViewSite }) => {
   const [form, setForm] = useState<SiteContent>(content);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -20,13 +21,16 @@ export const AdminArea: React.FC<AdminAreaProps> = ({ content, onUpdate, onLogou
     onLogout();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    setTimeout(() => {
-      onUpdate(form);
+    try {
+      await onUpdate(form);
+      alert('Alterações salvas no Firebase com sucesso!');
+    } catch (error) {
+      alert('Erro ao salvar no banco de dados. Verifique as permissões.');
+    } finally {
       setIsSaving(false);
-      alert('Alterações salvas com sucesso!');
-    }, 500);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -43,17 +47,23 @@ export const AdminArea: React.FC<AdminAreaProps> = ({ content, onUpdate, onLogou
           </div>
           <span className="font-['Playfair_Display'] font-bold text-xl">Painel de Edição</span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onViewSite}
+            className="text-[#8B735B] hover:bg-[#8B735B]/5 px-6 py-2.5 rounded-full font-bold flex items-center gap-2 text-sm uppercase tracking-widest transition-all"
+          >
+            <Eye className="w-4 h-4" /> Ver Site
+          </button>
           <button 
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-[#8B735B] hover:bg-[#76624D] text-white px-8 py-2.5 rounded-full font-bold flex items-center gap-2 text-sm uppercase tracking-widest transition-all"
+            className="bg-[#8B735B] hover:bg-[#76624D] text-white px-8 py-2.5 rounded-full font-bold flex items-center gap-2 text-sm uppercase tracking-widest transition-all disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {isSaving ? 'Salvando...' : 'Salvar Site'}
           </button>
           <button 
             onClick={handleLogout}
-            className="text-slate-400 hover:text-red-600 flex items-center gap-2 text-sm uppercase tracking-widest transition-colors font-bold"
+            className="text-slate-400 hover:text-red-600 flex items-center gap-2 text-sm uppercase tracking-widest transition-colors font-bold px-4"
           >
             <LogOut className="w-4 h-4" /> Sair
           </button>

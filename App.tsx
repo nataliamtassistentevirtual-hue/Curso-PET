@@ -15,8 +15,9 @@ import {
 import { CTAButton } from './components/CTAButton';
 import { AuthScreen } from './components/AuthScreen';
 import { AdminArea } from './components/AdminArea';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 type View = 'landing' | 'auth' | 'admin';
 
@@ -50,10 +51,32 @@ const App: React.FC = () => {
   const [view, setView] = useState<View>('landing');
   const [user, setUser] = useState<User | null>(null);
   const [openModule, setOpenModule] = useState<number | null>(null);
-  const [content, setContent] = useState<SiteContent>(() => {
-    const saved = localStorage.getItem('site_content');
-    return saved ? JSON.parse(saved) : DEFAULT_CONTENT;
-  });
+  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Carregar dados do Firestore ao iniciar
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const docRef = doc(db, "website", "content");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setContent(docSnap.data() as SiteContent);
+        } else {
+          // Se não existir no Firebase, tenta carregar do localStorage ou usa o default
+          const saved = localStorage.getItem('site_content');
+          if (saved) setContent(JSON.parse(saved));
+        }
+      } catch (error) {
+        console.error("Erro ao carregar do Firestore:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -65,9 +88,17 @@ const App: React.FC = () => {
     return unsubscribe;
   }, [view]);
 
-  const handleUpdateContent = (newContent: SiteContent) => {
-    setContent(newContent);
-    localStorage.setItem('site_content', JSON.stringify(newContent));
+  const handleUpdateContent = async (newContent: SiteContent) => {
+    try {
+      const docRef = doc(db, "website", "content");
+      await setDoc(docRef, newContent);
+      setContent(newContent);
+      localStorage.setItem('site_content', JSON.stringify(newContent));
+      return true;
+    } catch (error) {
+      console.error("Erro ao salvar no Firestore:", error);
+      throw error;
+    }
   };
 
   if (view === 'auth') {
@@ -75,7 +106,14 @@ const App: React.FC = () => {
   }
 
   if (view === 'admin' && user) {
-    return <AdminArea content={content} onUpdate={handleUpdateContent} onLogout={() => setView('landing')} />;
+    return (
+      <AdminArea 
+        content={content} 
+        onUpdate={handleUpdateContent} 
+        onLogout={() => setView('landing')} 
+        onViewSite={() => setView('landing')}
+      />
+    );
   }
 
   const modules = [
@@ -101,8 +139,26 @@ const App: React.FC = () => {
     }
   ];
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#FDFCF9] flex items-center justify-center">
+        <div className="animate-pulse text-[#8B735B] font-serif text-xl italic">Carregando conteúdo...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FDFCF9] text-[#2D2A28] font-sans selection:bg-[#8B735B] selection:text-white">
+      {/* Botão Flutuante Admin se logado */}
+      {user && (
+        <button 
+          onClick={() => setView('admin')}
+          className="fixed bottom-8 right-8 bg-[#8B735B] text-white p-4 rounded-full shadow-2xl z-[100] hover:scale-110 transition-transform flex items-center gap-2 font-bold uppercase tracking-widest text-xs"
+        >
+          <Lock className="w-4 h-4" /> Painel Admin
+        </button>
+      )}
+
       {/* Header */}
       <nav className="fixed top-0 w-full bg-[#FDFCF9]/90 backdrop-blur-md z-50 border-b border-[#8B735B]/10">
         <div className="max-w-5xl mx-auto px-6 flex justify-between items-center h-20">
@@ -175,7 +231,7 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Benefits Section - FOCO NO AUMENTO DE FONTE AQUI */}
+      {/* Benefits Section */}
       <section className="py-32 bg-[#FDFCF9]">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-24">
@@ -295,7 +351,7 @@ const App: React.FC = () => {
             <div>
               <span className="font-['Playfair_Display'] text-3xl font-bold tracking-tighter mb-8 block">{content.specialistName}</span>
               <p className="text-[#FDFCF9]/50 text-lg max-w-sm leading-relaxed font-light italic">
-                Aprimorando a excellence clínica e transformando o atendimento de traumas através da ciência.
+                Aprimorando a excelência clínica e transformando o atendimento de traumas através da ciência.
               </p>
             </div>
             <div className="flex flex-col md:items-end gap-10">
@@ -305,7 +361,7 @@ const App: React.FC = () => {
               </div>
               <div className="flex gap-6">
                 <div className="w-10 h-10 border border-white/5 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
-                  <Play className="w-3 h-3 fill-[#FDFCF9]/30 text-transparent" />
+                  <Play className="w-4 h-4 fill-[#FDFCF9]/30 text-transparent" />
                 </div>
                 <div className="w-10 h-10 border border-white/5 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
                   <Brain className="w-5 h-5 opacity-30" />
@@ -319,7 +375,6 @@ const App: React.FC = () => {
               © 2024 {content.specialistName}.
             </p>
             
-            {/* Botão de área administrativa restaurado com login e senha */}
             <button 
               onClick={() => user ? setView('admin') : setView('auth')}
               className="text-sm uppercase tracking-[0.4em] text-[#FDFCF9]/20 hover:text-[#8B735B] transition-colors font-bold"
