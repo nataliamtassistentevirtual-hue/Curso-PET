@@ -6,7 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Plano Estratégico em Terapia EMDR | Silvia Guz</title>
     
-    <!-- Tailwind CSS CDN com Configuração Avançada -->
+    <!-- Script para suprimir o aviso de produção do Tailwind CDN antes do carregamento -->
+    <script>
+      (function() {
+        const originalWarn = console.warn;
+        console.warn = function(message) {
+          if (typeof message === 'string' && message.includes('cdn.tailwindcss.com should not be used in production')) {
+            return;
+          }
+          originalWarn.apply(console, arguments);
+        };
+      })();
+    </script>
+
+    <!-- Tailwind CSS CDN com Configuração de Design System -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -22,6 +35,15 @@
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               serif: ['Playfair Display', 'serif'],
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.8s ease-out forwards',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
             }
           }
         }
@@ -41,14 +63,14 @@
         .glass-header {
           @apply bg-white/80 backdrop-blur-md border-b border-primary/10;
         }
-        .btn-gold {
-          @apply bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-8 rounded-full transition-all duration-500 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1;
-        }
-        .section-padding {
-          @apply py-24 md:py-32 px-6;
+        .btn-premium {
+          @apply bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-10 rounded-full transition-all duration-500 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 active:scale-95;
         }
         .heading-serif {
-          @apply font-serif text-4xl md:text-6xl tracking-tight leading-[1.1];
+          @apply font-serif text-4xl md:text-7xl tracking-tight leading-[1.1];
+        }
+        .animate-fade-in {
+          @apply opacity-0 animate-[fadeIn_0.8s_ease-out_forwards];
         }
       }
     </style>
