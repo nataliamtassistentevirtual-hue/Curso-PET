@@ -4,13 +4,16 @@ import {
   Shield, 
   ChevronDown, 
   ChevronUp, 
-  Check, 
   Users,
   Brain,
   Zap,
   Lock,
   Award,
-  Play
+  CheckCircle2,
+  Calendar,
+  Sparkles,
+  ArrowRight,
+  Target
 } from 'lucide-react';
 import { CTAButton } from './components/CTAButton';
 import { AuthScreen } from './components/AuthScreen';
@@ -35,14 +38,14 @@ export interface SiteContent {
 }
 
 const DEFAULT_CONTENT: SiteContent = {
-  headline: "Plano Estratégico em Terapia EMDR",
-  subheadline: "Domine a prática clínica com a Senior Trainer Silvia Guz. Segurança e precisão neurobiológica para casos complexos.",
+  headline: "Eleve sua Prática Clínica com o Plano Estratégico em EMDR",
+  subheadline: "Segurança e precisão neurobiológica para casos complexos com a Senior Trainer Silvia Guz. Saia da insegurança para a maestria terapêutica.",
   courseLink: "https://chk.eduzz.com/R9JJGYBE9X",
   specialistName: "Silvia Guz",
-  specialistBio: "Psicóloga, Senior Trainer EMDRIA e precursora da abordagem no Brasil. Referência internacional com foco em Neuroterapia e Trauma.",
+  specialistBio: "Psicóloga com mais de 30 anos de experiência clínica, Senior Trainer EMDRIA e precursora da abordagem EMDR no Brasil. Referência absoluta em Neuroterapia e Trauma.",
   specialistImageUrl: "",
   priceInstallments: "12x",
-  priceValue: "197",
+  priceValue: "197,00",
   priceCash: "1.997,00",
   whatsappLink: ""
 };
@@ -50,249 +53,231 @@ const DEFAULT_CONTENT: SiteContent = {
 const App: React.FC = () => {
   const [view, setView] = useState<View>('landing');
   const [user, setUser] = useState<User | null>(null);
-  const [openModule, setOpenModule] = useState<number | null>(null);
+  const [openModule, setOpenModule] = useState<number | null>(1);
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carregar dados do Firestore ao iniciar
   useEffect(() => {
+    let isMounted = true;
     const fetchContent = async () => {
       try {
         const docRef = doc(db, "website", "content");
         const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          setContent(docSnap.data() as SiteContent);
-        } else {
-          // Se não existir no Firebase, tenta carregar do localStorage ou usa o default
-          const saved = localStorage.getItem('site_content');
-          if (saved) setContent(JSON.parse(saved));
+        if (isMounted) {
+          if (docSnap.exists()) setContent(docSnap.data() as SiteContent);
+          setIsLoading(false);
         }
       } catch (error) {
-        console.error("Erro ao carregar do Firestore:", error);
-      } finally {
+        console.warn("Erro ao carregar banco de dados:", error);
         setIsLoading(false);
       }
     };
-
     fetchContent();
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser && view === 'auth') {
-        setView('admin');
-      }
-    });
-    return unsubscribe;
-  }, [view]);
+    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
 
   const handleUpdateContent = async (newContent: SiteContent) => {
     try {
       const docRef = doc(db, "website", "content");
       await setDoc(docRef, newContent);
       setContent(newContent);
-      localStorage.setItem('site_content', JSON.stringify(newContent));
       return true;
-    } catch (error) {
-      console.error("Erro ao salvar no Firestore:", error);
-      throw error;
+    } catch (e) {
+      console.error(e);
+      return false;
     }
   };
 
-  if (view === 'auth') {
-    return <AuthScreen onBack={() => setView('landing')} onSuccess={() => setView('admin')} />;
-  }
-
-  if (view === 'admin' && user) {
-    return (
-      <AdminArea 
-        content={content} 
-        onUpdate={handleUpdateContent} 
-        onLogout={() => setView('landing')} 
-        onViewSite={() => setView('landing')}
-      />
-    );
-  }
+  if (view === 'auth') return <AuthScreen onBack={() => setView('landing')} onSuccess={() => setView('admin')} />;
+  if (view === 'admin' && user) return <AdminArea content={content} onUpdate={handleUpdateContent} onLogout={() => setView('landing')} onViewSite={() => setView('landing')} />;
 
   const modules = [
-    {
-      id: 1,
-      title: "Fundamentos da Neuroterapia",
-      topics: ["Base neurobiológica do trauma", "Modelo PAI em profundidade", "A neurociência do reprocessamento"]
+    { 
+      id: 1, 
+      title: "Fundamentos da Neuroterapia de Ponta", 
+      desc: "Entenda a engrenagem cerebral por trás do trauma.",
+      topics: [
+        "A neurobiologia do trauma e da memória traumática",
+        "O Modelo PAI na prática clínica real",
+        "Como o cérebro processa e reprocessa informações"
+      ] 
     },
-    {
-      id: 2,
-      title: "Fases 1 e 2: Planejamento Estratégico",
-      topics: ["Conceituação de caso complexo", "Organização da avalanche de traumas", "Identificação de nós críticos"]
+    { 
+      id: 2, 
+      title: "Arquitetura do Plano Estratégico", 
+      desc: "Como planejar o sucesso do tratamento desde o dia 1.",
+      topics: [
+        "Conceituação de caso para pacientes complexos",
+        "O 'nó górdio' do trauma: identificando o alvo mestre",
+        "Estabilização e Fase 2 para casos de dissociação"
+      ] 
     },
-    {
-      id: 3,
-      title: "Manejo de Bloqueios no Processamento",
-      topics: ["Estratégias para processamentos lentos", "Entrelaçamentos cognitivos", "Uso estratégico de estimulação bilateral"]
+    { 
+      id: 3, 
+      title: "Manejo de Bloqueios e Impasses", 
+      desc: "O que fazer quando o processamento trava.",
+      topics: [
+        "Entrelaçamentos cognitivos e somatossensoriais",
+        "Estratégias para processamentos lentos ou circulares",
+        "Trabalhando com defesas e resistências inconscientes"
+      ] 
     },
-    {
-      id: 4,
-      title: "Integração e Finalização de Casos",
-      topics: ["Critérios para alta", "Instalação de recursos futuros", "Consolidação de resultados"]
+    { 
+      id: 4, 
+      title: "Consolidação e Alta Terapêutica", 
+      desc: "Fechando o ciclo com segurança e resiliência.",
+      topics: [
+        "Instalação de recursos positivos e futuros",
+        "Critérios objetivos para encerramento de casos",
+        "Manutenção de resultados a longo prazo"
+      ] 
     }
   ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#FDFCF9] flex items-center justify-center">
-        <div className="animate-pulse text-[#8B735B] font-serif text-xl italic">Carregando conteúdo...</div>
-      </div>
-    );
-  }
+  if (isLoading) return <div className="h-screen flex items-center justify-center bg-beige"><div className="animate-pulse text-primary font-serif italic text-2xl">Carregando maestria...</div></div>;
 
   return (
-    <div className="min-h-screen bg-[#FDFCF9] text-[#2D2A28] font-sans selection:bg-[#8B735B] selection:text-white">
-      {/* Botão Flutuante Admin se logado */}
+    <div className="min-h-screen">
       {user && (
-        <button 
-          onClick={() => setView('admin')}
-          className="fixed bottom-8 right-8 bg-[#8B735B] text-white p-4 rounded-full shadow-2xl z-[100] hover:scale-110 transition-transform flex items-center gap-2 font-bold uppercase tracking-widest text-xs"
-        >
-          <Lock className="w-4 h-4" /> Painel Admin
+        <button onClick={() => setView('admin')} className="fixed bottom-8 right-8 z-50 bg-dark text-white p-4 rounded-full shadow-2xl flex items-center gap-2 hover:bg-primary transition-all">
+          <Lock size={18} /> <span className="text-xs font-bold uppercase tracking-widest">Editar Site</span>
         </button>
       )}
 
       {/* Header */}
-      <nav className="fixed top-0 w-full bg-[#FDFCF9]/90 backdrop-blur-md z-50 border-b border-[#8B735B]/10">
-        <div className="max-w-5xl mx-auto px-6 flex justify-between items-center h-20">
-          <div className="flex items-center gap-2">
-             <span className="font-['Playfair_Display'] text-2xl font-bold tracking-tighter text-[#2D2A28]">{content.specialistName}</span>
-          </div>
-          <div className="flex items-center gap-8">
-            <CTAButton text="Acessar Conteúdo" href={content.courseLink} className="py-2.5 px-6 text-base !bg-transparent !border !border-[#8B735B] !text-[#8B735B] hover:!bg-[#8B735B] hover:!text-white !shadow-none !rounded-full" />
+      <nav className="fixed top-0 w-full z-50 glass-header">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+          <span className="font-serif text-2xl font-bold tracking-tighter italic text-primary">{content.specialistName}</span>
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#metodo" className="text-sm font-semibold uppercase tracking-widest text-dark/70 hover:text-primary transition-colors">Método</a>
+            <a href="#modulos" className="text-sm font-semibold uppercase tracking-widest text-dark/70 hover:text-primary transition-colors">Módulos</a>
+            <CTAButton text="Inscrever-se" href={content.courseLink} className="!py-2.5 !px-6 !text-xs !bg-dark hover:!bg-primary" />
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-48 pb-24 px-6 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#8B735B]/5 rounded-full blur-[150px] -z-10"></div>
-        
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block border border-[#8B735B]/20 text-[#8B735B] text-sm font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-10">
-            Formação 100% Online
+      <section className="pt-48 pb-32 px-6 relative overflow-hidden bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-beige to-beige">
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-white/50 text-primary text-xs font-bold uppercase tracking-widest mb-12 animate-fade-in">
+            <Sparkles size={14} /> Transforme sua Clínica em 2024
           </div>
-          <h1 className="text-4xl md:text-7xl font-bold text-[#2D2A28] mb-10 leading-[1.15] font-['Playfair_Display'] italic">
+          <h1 className="heading-serif mb-10 text-dark italic">
             {content.headline}
           </h1>
-          <p className="text-[#8B735B] text-xl md:text-3xl mb-14 max-w-2xl mx-auto font-light leading-relaxed">
+          <p className="text-xl md:text-2xl font-light text-primary-dark/70 mb-16 max-w-3xl mx-auto leading-relaxed">
             {content.subheadline}
           </p>
-          <div className="flex flex-col items-center gap-6">
-            <CTAButton text="Adquirir Acesso ao Curso" href={content.courseLink} className="w-full md:w-auto px-16 py-6 text-xl" />
-            <span className="text-sm uppercase tracking-[0.2em] text-slate-400 font-medium">Plataforma de ensino exclusiva</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Specialist Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-              <div className="aspect-[4/5] rounded-[2rem] overflow-hidden bg-[#FDFCF9] border border-[#8B735B]/10">
-                {content.specialistImageUrl ? (
-                   <img src={content.specialistImageUrl} alt={content.specialistName} className="w-full h-full object-cover grayscale-[20%]" />
-                ) : (
-                   <div className="w-full h-full flex items-center justify-center bg-[#8B735B]/5">
-                      <Users className="w-20 h-20 text-[#8B735B]/20" />
-                   </div>
-                )}
-              </div>
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#8B735B] rounded-full flex items-center justify-center text-white p-4 text-center text-sm font-bold uppercase tracking-widest leading-tight border-8 border-white shadow-lg">
-                Referência em EMDR no Brasil
-              </div>
-            </div>
-            <div>
-              <span className="text-[#8B735B] text-sm font-bold uppercase tracking-[0.3em] mb-6 block">Sobre a Especialista</span>
-              <h2 className="text-4xl font-bold text-[#2D2A28] mb-8 font-['Playfair_Display']">{content.specialistName}</h2>
-              <p className="text-[#2D2A28]/80 text-2xl leading-relaxed mb-10 font-light italic">
-                {content.specialistBio}
-              </p>
-              <div className="flex flex-col gap-4">
-                 <div className="flex items-center gap-4 text-lg text-[#8B735B]">
-                    <Award className="w-6 h-6 opacity-60" />
-                    <span>EMDRIA Accredited Senior Trainer</span>
-                 </div>
-                 <div className="flex items-center gap-4 text-lg text-[#8B735B]">
-                    <Shield className="w-6 h-6 opacity-60" />
-                    <span>Especialista em Traumas Complexos</span>
-                 </div>
-              </div>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+            <CTAButton text="Quero Garantir minha Vaga" href={content.courseLink} className="btn-gold w-full md:w-auto" />
+            <div className="flex items-center gap-3 text-slate-400 font-medium text-sm">
+              <CheckCircle2 size={18} className="text-primary" /> Acesso imediato à plataforma
             </div>
           </div>
         </div>
+        {/* Decorative Circles */}
+        <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 rounded-full bg-primary/5 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-96 h-96 rounded-full bg-primary/5 blur-3xl"></div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-32 bg-[#FDFCF9]">
-        <div className="max-w-5xl mx-auto px-6">
+      {/* Diferenciais Section */}
+      <section id="metodo" className="section-padding bg-white">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
-            <span className="text-[#8B735B] text-base font-bold uppercase tracking-[0.3em] mb-6 block">Metodologia</span>
-            <h2 className="text-4xl font-bold font-['Playfair_Display'] mb-8">O que você vai dominar</h2>
-            <div className="w-16 h-[1px] bg-[#8B735B]/30 mx-auto"></div>
+            <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-4 block">O Caminho da Maestria</span>
+            <h2 className="font-serif text-5xl md:text-6xl italic">Por que este Plano?</h2>
           </div>
-
           <div className="grid md:grid-cols-3 gap-12">
             {[
-              { icon: <Shield />, title: "Segurança Clínica", desc: "Aprenda protocolos precisos para estabilização de pacientes e manejo de crises durante o processamento." },
-              { icon: <Zap />, title: "Neurobiologia", desc: "Entenda exatamente o que acontece no cérebro durante o reprocessamento e use isso a seu favor." },
-              { icon: <Users />, title: "Traumas Complexos", desc: "Estratégias específicas para casos de dissociação e traumas de desenvolvimento que não cedem ao protocolo básico." }
+              { icon: <Shield />, title: "Segurança Absoluta", text: "Trabalhe com traumas complexos sem o medo de desestabilizar o paciente." },
+              { icon: <Zap />, title: "Precisão Cirúrgica", text: "Saiba exatamente qual alvo atacar para destravar o processamento." },
+              { icon: <Brain />, title: "Base Científica", text: "Entendimento profundo da neurobiologia aplicada à cada fase do EMDR." }
             ].map((item, i) => (
-              <div key={i} className="text-center group">
-                 <div className="w-20 h-20 bg-white border border-[#8B735B]/10 rounded-full flex items-center justify-center mx-auto mb-10 transition-all duration-500 group-hover:bg-[#8B735B] group-hover:border-transparent group-hover:shadow-xl group-hover:shadow-[#8B735B]/20">
-                    {React.cloneElement(item.icon as React.ReactElement, { className: "text-[#8B735B] w-8 h-8 group-hover:text-white transition-colors" })}
-                 </div>
-                 <h3 className="text-2xl font-bold mb-6 font-['Playfair_Display']">{item.title}</h3>
-                 <p className="text-[#2D2A28]/60 text-xl leading-[1.8] font-light">
-                   {item.desc}
-                 </p>
+              <div key={i} className="group p-10 rounded-[2.5rem] bg-beige/30 border border-primary/5 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5">
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-primary mb-8 shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                  {React.cloneElement(item.icon as React.ReactElement, { size: 32 })}
+                </div>
+                <h3 className="font-serif text-2xl mb-4 italic">{item.title}</h3>
+                <p className="text-dark/60 leading-relaxed font-light">{item.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Curriculum Section */}
-      <section className="py-32 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-            <div className="max-w-md">
-              <span className="text-[#8B735B] text-sm font-bold uppercase tracking-[0.3em] mb-4 block">Grade Curricular</span>
-              <h2 className="text-4xl font-bold font-['Playfair_Display']">Estrutura do Aprendizado</h2>
+      {/* Bio Section */}
+      <section className="section-padding bg-beige relative overflow-hidden">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-24 items-center">
+          <div className="relative">
+            <div className="aspect-[4/5] rounded-[3rem] overflow-hidden bg-primary/10 border-8 border-white shadow-2xl">
+              {content.specialistImageUrl ? (
+                <img src={content.specialistImageUrl} alt={content.specialistName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center"><Users size={80} className="text-primary/20" /></div>
+              )}
             </div>
-            <p className="text-slate-400 text-lg font-light italic">Conteúdo distribuído em etapas estratégicas</p>
+            <div className="absolute -bottom-10 -right-10 bg-white p-8 rounded-3xl shadow-xl border border-primary/10 max-w-[280px]">
+              <div className="flex gap-2 text-primary mb-2"><Award /><Award /><Award /></div>
+              <p className="font-bold text-dark text-lg leading-tight mb-2 italic">Senior Trainer EMDRIA</p>
+              <p className="text-xs text-dark/50 uppercase tracking-widest font-bold">Referência internacional em Trauma</p>
+            </div>
+          </div>
+          <div>
+            <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-6 block">Sua Mentora</span>
+            <h2 className="heading-serif mb-8 italic">{content.specialistName}</h2>
+            <div className="space-y-6 text-xl text-dark/70 font-light leading-relaxed">
+              <p>"{content.specialistBio}"</p>
+              <p>Prepare-se para aprender com quem trouxe o EMDR para o Brasil e formou gerações de terapeutas de sucesso.</p>
+            </div>
+            <div className="mt-12 flex flex-wrap gap-4">
+              <span className="px-4 py-2 bg-white rounded-full text-xs font-bold uppercase tracking-widest border border-primary/10">Psicóloga Clínica</span>
+              <span className="px-4 py-2 bg-white rounded-full text-xs font-bold uppercase tracking-widest border border-primary/10">Senior Trainer EMDR</span>
+              <span className="px-4 py-2 bg-white rounded-full text-xs font-bold uppercase tracking-widest border border-primary/10">Especialista em Neuroterapia</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Módulos Section */}
+      <section id="modulos" className="section-padding bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-24">
+            <span className="text-primary text-sm font-bold uppercase tracking-[0.3em] mb-4 block">Grade Curricular Premium</span>
+            <h2 className="font-serif text-5xl italic">O Mapa da sua Evolução</h2>
           </div>
           
           <div className="space-y-6">
             {modules.map((m) => (
-              <div key={m.id} className="border-b border-[#8B735B]/10">
+              <div key={m.id} className={`rounded-[2.5rem] border transition-all duration-500 ${openModule === m.id ? 'bg-beige/30 border-primary/20 shadow-xl' : 'bg-white border-primary/5 hover:border-primary/20'}`}>
                 <button 
                   onClick={() => setOpenModule(openModule === m.id ? null : m.id)}
-                  className="w-full flex items-center justify-between py-10 text-left group"
+                  className="w-full flex items-center justify-between p-10 text-left"
                 >
-                  <div className="flex items-center gap-10">
-                    <span className="text-[#8B735B]/40 font-['Playfair_Display'] text-3xl italic">0{m.id}</span>
-                    <span className="font-bold text-[#2D2A28] text-2xl group-hover:text-[#8B735B] transition-colors">{m.title}</span>
+                  <div className="flex items-center gap-8">
+                    <span className="font-serif text-5xl text-primary/20 italic">0{m.id}</span>
+                    <div>
+                      <h3 className="text-2xl font-bold mb-1">{m.title}</h3>
+                      <p className="text-sm text-dark/40 font-medium uppercase tracking-widest">{m.desc}</p>
+                    </div>
                   </div>
-                  <div className={`w-12 h-12 rounded-full border border-[#8B735B]/10 flex items-center justify-center transition-all ${openModule === m.id ? 'bg-[#8B735B] border-transparent' : ''}`}>
-                    {openModule === m.id ? <ChevronUp className="w-5 h-5 text-white" /> : <ChevronDown className="w-5 h-5 text-[#8B735B]" />}
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${openModule === m.id ? 'bg-primary text-white rotate-180' : 'bg-primary/5 text-primary'}`}>
+                    <ChevronDown size={24} />
                   </div>
                 </button>
+                
                 {openModule === m.id && (
-                  <div className="pb-10 pl-20 pr-10">
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                  <div className="px-10 pb-12 pl-24 md:pl-32 animate-fade-in">
+                    <div className="h-px bg-primary/10 mb-8 w-full"></div>
+                    <ul className="grid md:grid-cols-2 gap-6">
                       {m.topics.map((t, idx) => (
-                        <li key={idx} className="flex items-center gap-4 text-lg text-[#2D2A28]/70 font-light">
-                          <div className="w-1.5 h-1.5 bg-[#8B735B] rounded-full"></div>
-                          {t}
+                        <li key={idx} className="flex items-start gap-3 text-dark/70 font-light text-lg">
+                          <CheckCircle2 size={20} className="text-primary flex-shrink-0 mt-1" />
+                          <span>{t}</span>
                         </li>
                       ))}
                     </ul>
@@ -304,84 +289,37 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Checkout Section */}
-      <section className="py-32 bg-[#FDFCF9]">
-        <div className="max-w-lg mx-auto px-6">
-           <div className="bg-white rounded-[3rem] p-12 text-center shadow-2xl shadow-[#8B735B]/5 border border-[#8B735B]/5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#8B735B]/5 rounded-bl-[4rem]"></div>
-              
-              <span className="text-[#8B735B] text-sm font-bold uppercase tracking-[0.4em] mb-12 block">Investimento no seu Futuro</span>
-              
-              <div className="mb-14">
-                 <p className="text-slate-300 text-lg line-through mb-4">De R$ 2.497,00</p>
-                 <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-[#2D2A28] font-light text-2xl">{content.priceInstallments} de</span>
-                    <span className="text-[#2D2A28] font-bold text-6xl font-['Playfair_Display'] italic">R$ {content.priceValue}</span>
-                 </div>
-                 <p className="text-[#8B735B] text-base mt-6 uppercase tracking-widest font-bold">À vista por R$ {content.priceCash}</p>
-              </div>
-              
-              <ul className="text-left space-y-6 mb-16 border-t border-slate-50 pt-10">
-                 {[
-                   "Acesso imediato à plataforma de alunos",
-                   "Materiais complementares exclusivos",
-                   "Certificado de Conclusão Digital",
-                   "Suporte via área de membros"
-                 ].map((feature) => (
-                   <li key={feature} className="flex items-center gap-4 text-[#2D2A28]/60 text-lg font-light">
-                     <Check className="w-6 h-6 text-[#8B735B]" />
-                     {feature}
-                   </li>
-                 ))}
-              </ul>
-
-              <CTAButton text="Garantir meu Acesso" href={content.courseLink} className="w-full !rounded-2xl py-6 text-xl" />
-              
-              <div className="mt-12 flex items-center justify-center gap-3 text-sm text-slate-300 font-bold uppercase tracking-widest">
-                 <Lock className="w-4 h-4" /> Transação Criptografada & Segura
-              </div>
-           </div>
+      {/* Final CTA */}
+      <section className="section-padding bg-dark text-white relative overflow-hidden">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="font-serif text-5xl md:text-6xl italic mb-10">Sua jornada rumo à maestria começa aqui.</h2>
+          <p className="text-xl md:text-2xl font-light text-white/60 mb-16 italic">Últimas vagas com valor promocional para esta turma.</p>
+          <div className="bg-white/5 border border-white/10 p-12 rounded-[3rem] backdrop-blur-sm mb-16">
+            <p className="text-primary-light uppercase tracking-[0.3em] font-bold text-sm mb-6">Investimento</p>
+            <div className="flex items-baseline justify-center gap-2 mb-4">
+              <span className="text-2xl font-light">12x de</span>
+              <span className="text-6xl md:text-8xl font-serif font-bold italic tracking-tighter text-primary-light">R$ {content.priceValue}</span>
+            </div>
+            <p className="text-white/40 text-sm font-bold uppercase tracking-widest">ou R$ {content.priceCash} à vista</p>
+          </div>
+          <CTAButton text="Garantir meu Acesso Master" href={content.courseLink} className="btn-gold !bg-primary-light hover:!bg-white hover:!text-dark w-full md:w-auto text-xl px-20" />
         </div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#2D2A28] text-[#FDFCF9]/90 py-24 px-6 border-t border-[#8B735B]/10">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-start mb-20">
-            <div>
-              <span className="font-['Playfair_Display'] text-3xl font-bold tracking-tighter mb-8 block">{content.specialistName}</span>
-              <p className="text-[#FDFCF9]/50 text-lg max-w-sm leading-relaxed font-light italic">
-                Aprimorando a excelência clínica e transformando o atendimento de traumas através da ciência.
-              </p>
-            </div>
-            <div className="flex flex-col md:items-end gap-10">
-              <div className="flex gap-12 text-sm uppercase tracking-[0.3em] font-bold text-[#FDFCF9]/40">
-                 <a href="#" className="hover:text-[#8B735B] transition-colors">Termos</a>
-                 <a href="#" className="hover:text-[#8B735B] transition-colors">Privacidade</a>
-              </div>
-              <div className="flex gap-6">
-                <div className="w-10 h-10 border border-white/5 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
-                  <Play className="w-4 h-4 fill-[#FDFCF9]/30 text-transparent" />
-                </div>
-                <div className="w-10 h-10 border border-white/5 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors cursor-pointer">
-                  <Brain className="w-5 h-5 opacity-30" />
-                </div>
-              </div>
-            </div>
+      <footer className="py-20 bg-[#141211] text-white/50 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="text-center md:text-left">
+            <span className="font-serif text-3xl font-bold text-white italic block mb-2">{content.specialistName}</span>
+            <p className="text-xs uppercase tracking-[0.3em] font-bold">Maestria em Terapia de Trauma</p>
           </div>
-          
-          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="text-[#FDFCF9]/20 text-sm uppercase tracking-[0.2em]">
-              © 2024 {content.specialistName}.
-            </p>
-            
-            <button 
-              onClick={() => user ? setView('admin') : setView('auth')}
-              className="text-sm uppercase tracking-[0.4em] text-[#FDFCF9]/20 hover:text-[#8B735B] transition-colors font-bold"
-            >
-              Área Administrativa
-            </button>
+          <div className="flex gap-12 text-sm font-bold uppercase tracking-widest">
+            <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
+            <a href="#" className="hover:text-primary transition-colors">Termos</a>
+            <button onClick={() => view === 'landing' ? setView('auth') : setView('landing')} className="hover:text-primary transition-colors">Admin</button>
           </div>
+          <div className="text-xs font-medium">© 2024 Silvia Guz. Todos os direitos reservados.</div>
         </div>
       </footer>
     </div>

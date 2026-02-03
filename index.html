@@ -5,30 +5,67 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Plano Estratégico em Terapia EMDR | Silvia Guz</title>
+    
+    <!-- Tailwind CSS CDN com Configuração Avançada -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        scroll-behavior: smooth;
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#8B735B',
+              'primary-light': '#C5A27D',
+              'primary-dark': '#5D4D3D',
+              beige: '#FDFCF9',
+              dark: '#1A1817',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            }
+          }
+        }
       }
-      h1, h2, h3 {
-        font-family: 'Playfair Display', serif;
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+      @layer base {
+        body {
+          @apply bg-beige text-dark antialiased;
+          scroll-behavior: smooth;
+        }
+      }
+      @layer components {
+        .glass-header {
+          @apply bg-white/80 backdrop-blur-md border-b border-primary/10;
+        }
+        .btn-gold {
+          @apply bg-primary hover:bg-primary-dark text-white font-semibold py-4 px-8 rounded-full transition-all duration-500 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1;
+        }
+        .section-padding {
+          @apply py-24 md:py-32 px-6;
+        }
+        .heading-serif {
+          @apply font-serif text-4xl md:text-6xl tracking-tight leading-[1.1];
+        }
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "firebase/": "https://esm.sh/firebase@^12.8.0/"
-  }
-}
-</script>
-</head>
-  <body class="bg-[#FDFCF9] text-gray-900">
+
+    <script type="importmap">
+    {
+      "imports": {
+        "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "react": "https://esm.sh/react@^19.2.4",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "firebase/": "https://esm.sh/firebase@^12.8.0/"
+      }
+    }
+    </script>
+  </head>
+  <body>
     <div id="root"></div>
   </body>
 </html>
